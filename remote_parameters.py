@@ -58,11 +58,10 @@ class RemoteParameters:
             yield name, param.value
 
     def register_listener(self, param, callback):
-        self._listeners.setdefault(param.name, [])
-
         if param.name not in self._listeners:
             self.remote.exposed_register_remote_listener(self.uuid, param.name)
 
+        self._listeners.setdefault(param.name, [])
         self._listeners[param.name].append(callback)
 
     def call_listeners(self, auto_queue=True):
