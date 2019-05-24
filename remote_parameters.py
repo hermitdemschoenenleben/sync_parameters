@@ -65,7 +65,9 @@ class RemoteParameters:
         self._listeners[param.name].append(callback)
 
     def call_listeners(self, auto_queue=True):
-        for param_name, value in unpack(self.remote.get_listener_queue(self.uuid)):
+        queue = unpack(self.remote.get_listener_queue(self.uuid))
+
+        for param_name, value in queue:
             for listener in self._listeners[param_name]:
                 listener(value)
 

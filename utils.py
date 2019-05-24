@@ -2,9 +2,20 @@ import bz2
 import pickle
 
 
+# FIXME: evaluate performance
+
 def pack(value):
-    return bz2.compress(pickle.dumps(value))
+    try:
+        return pickle.dumps(value)
+    except (AttributeError, TypeError):
+        # this happens when un-pickleable objects (e.g. functions) are assigned
+        # to a parameter. In this case, we don't pickle it but transfer a netref
+        # instead
+        return value
 
 
 def unpack(value):
-    return pickle.loads(bz2.decompress(value))
+    try:
+        return pickle.loads(value)
+    except:
+        return value
