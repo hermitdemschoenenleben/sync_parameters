@@ -2,8 +2,6 @@ import bz2
 import pickle
 
 
-# FIXME: evaluate performance
-
 def pack(value):
     try:
         return pickle.dumps(value)

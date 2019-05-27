@@ -126,6 +126,9 @@ class BaseService(rpyc.Service):
         self.parameters = parameter_cls()
         self._uuid_mapping = {}
 
+    def on_connect(self, client):
+        self._uuid_mapping[client] = client.root.uuid
+
     def on_disconnect(self, client):
         uuid = self._uuid_mapping[client]
         self.parameters.unregister_remote_listeners(uuid)
