@@ -13,13 +13,14 @@ from .utils import pack, unpack
 
 class Parameter:
     """Represents a single parameter and is used by `Parameters`."""
-    def __init__(self, min_=None, max_=None, start=None, wrap=False):
+    def __init__(self, min_=None, max_=None, start=None, wrap=False, sync=True):
         self.min = min_
         self.max = max_
         self.wrap = wrap
         self._value = start
         self._start = start
         self._listeners = set()
+        self.exposed_sync = sync
 
     @property
     def value(self):

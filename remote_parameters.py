@@ -11,8 +11,13 @@ class RemoteParameter:
         self.name = name
         self.parent = parent
 
+        if self.remote.exposed_sync:
+            self.change(self._sync_value)
+
     @property
     def value(self):
+        if hasattr(self, '_cached_value'):
+            return self._cached_value
         return self.parent._get_param(self.name)
 
     @value.setter
@@ -21,6 +26,7 @@ class RemoteParameter:
 
     def change(self, function):
         self.parent.register_listener(self, function)
+        function(self.value)
 
     def reset(self):
         self.remote.reset()
@@ -28,6 +34,9 @@ class RemoteParameter:
     @property
     def _start(self):
         return self.remote._start
+
+    def _sync_value(self, value):
+        self._cached_value = value
 
 
 class RemoteParameters:
@@ -47,10 +56,11 @@ class RemoteParameters:
         self.remote = remote
         self.uuid = uuid
 
+        self._listeners = {}
+
         for name, param in remote.exposed_get_all_parameters():
             setattr(self, name, RemoteParameter(self, param, name))
 
-        self._listeners = {}
         self.call_listeners()
 
     def __iter__(self):
