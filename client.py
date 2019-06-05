@@ -1,13 +1,13 @@
 """
-    linie.communication.client
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    communication.client
+    ~~~~~~~~~~~~~~~~~~~~
 
     Contains the client that can be used to access a service with easy access
     to the server's parameters.
 """
 import rpyc
 import uuid
-from linie.communication.remote_parameters import RemoteParameters
+from .remote_parameters import RemoteParameters
 
 
 class ClientService(rpyc.Service):
