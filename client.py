@@ -18,19 +18,21 @@ class ClientService(rpyc.Service):
 
 
 class BaseClient:
-    def __init__(self, server, port):
+    def __init__(self, server, port, use_parameter_cache):
+        self.use_parameter_cache = use_parameter_cache
         self.uuid = uuid.uuid4().hex
 
         self.client_service = ClientService(self.uuid)
 
-        self.connect(server, port)
+        self.connect(server, port, use_parameter_cache)
 
-    def connect(self, server, port):
-        return self._connect(server, port)
+    def connect(self, server, port, use_parameter_cache):
+        return self._connect(server, port, use_parameter_cache)
 
-    def _connect(self, server, port):
+    def _connect(self, server, port, use_parameter_cache):
         self.connection = rpyc.connect(server, port, service=self.client_service)
         self.parameters = RemoteParameters(
             self.connection.root,
-            self.uuid
+            self.uuid,
+            use_parameter_cache
         )

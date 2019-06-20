@@ -1,17 +1,15 @@
-from pyqtgraph.Qt import QtCore
-
 from .utils import unpack, pack
 
 
 class RemoteParameter:
     """A helper class for `RemoteParameters`, representing a single remote
     parameter."""
-    def __init__(self, parent, remote, name):
+    def __init__(self, parent, remote, name, use_cache):
         self.remote = remote
         self.name = name
         self.parent = parent
 
-        if self.remote.exposed_sync:
+        if use_cache and self.remote.exposed_sync:
             self.change(self._sync_value)
 
     @property
@@ -52,14 +50,14 @@ class RemoteParameters:
 
         r.my_param.change(on_change)
     """
-    def __init__(self, remote, uuid):
+    def __init__(self, remote, uuid, use_cache):
         self.remote = remote
         self.uuid = uuid
 
         self._listeners = {}
 
         for name, param in remote.exposed_get_all_parameters():
-            setattr(self, name, RemoteParameter(self, param, name))
+            setattr(self, name, RemoteParameter(self, param, name, use_cache))
 
         self.call_listeners()
 
@@ -74,15 +72,12 @@ class RemoteParameters:
         self._listeners.setdefault(param.name, [])
         self._listeners[param.name].append(callback)
 
-    def call_listeners(self, auto_queue=True):
+    def call_listeners(self):
         queue = unpack(self.remote.get_listener_queue(self.uuid))
 
         for param_name, value in queue:
             for listener in self._listeners[param_name]:
                 listener(value)
-
-        if auto_queue:
-            QtCore.QTimer.singleShot(100, self.call_listeners)
 
     def _get_param(self, param_name):
         return unpack(self.remote.exposed_get_param(param_name))
