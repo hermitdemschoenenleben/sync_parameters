@@ -91,7 +91,8 @@ class BaseParameters:
         self._remote_listener_callbacks.setdefault(uuid, [])
 
         def on_change(value, uuid=uuid, param_name=param_name):
-            self._remote_listener_queue[uuid].append((param_name, value))
+            if uuid in self._remote_listener_queue:
+                self._remote_listener_queue[uuid].append((param_name, value))
 
         param = getattr(self, param_name)
         param.change(on_change)
