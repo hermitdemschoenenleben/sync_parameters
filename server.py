@@ -48,7 +48,8 @@ class Parameter:
             function(self._value)
 
     def remove_listener(self, function):
-        self._listeners.remove(function)
+        if function in self._listeners:
+            self._listeners.remove(function)
 
     def exposed_reset(self):
         self.value = self._start
