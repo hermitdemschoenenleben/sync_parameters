@@ -13,13 +13,15 @@ from .utils import pack, unpack
 
 class Parameter:
     """Represents a single parameter and is used by `Parameters`."""
-    def __init__(self, min_=None, max_=None, start=None, wrap=False, sync=True):
+    def __init__(self, min_=None, max_=None, start=None, wrap=False, sync=True,
+                 collapsed_sync=False):
         self.min = min_
         self.max = max_
         self.wrap = wrap
         self._value = start
         self._start = start
         self._listeners = set()
+        self._collapsed_sync = collapsed_sync
         self.exposed_sync = sync
 
     @property
@@ -109,6 +111,17 @@ class BaseParameters:
     def get_listener_queue(self, uuid):
         queue = self._remote_listener_queue.get(uuid, [])
         self._remote_listener_queue[uuid] = []
+
+        # filter out multiple values for collapsible parameters
+        already_has_value = []
+        for idx in reversed(range(len(queue))):
+            param_name, value = queue[idx]
+            if self._get_param(param_name)._collapsed_sync:
+                if param_name in already_has_value:
+                    del queue[idx]
+                else:
+                    already_has_value.append(param_name)
+
         return pack(queue)
 
     def __iter__(self):
