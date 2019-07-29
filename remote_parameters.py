@@ -63,7 +63,7 @@ class RemoteParameters:
 
     def __iter__(self):
         for name, param in self.remote.exposed_get_all_parameters():
-            yield name, param.value
+            yield name, getattr(self, name).value
 
     def register_listener(self, param, callback):
         if param.name not in self._listeners:
