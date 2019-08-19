@@ -5,7 +5,7 @@ import pickle
 def pack(value):
     try:
         return pickle.dumps(value)
-    except (AttributeError, TypeError):
+    except:
         # this happens when un-pickleable objects (e.g. functions) are assigned
         # to a parameter. In this case, we don't pickle it but transfer a netref
         # instead
