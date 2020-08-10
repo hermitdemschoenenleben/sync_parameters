@@ -6,7 +6,8 @@
     to the server's parameters.
 """
 import rpyc
-import uuid
+import random
+import string
 from plumbum import colors
 from .remote_parameters import RemoteParameters
 
@@ -21,7 +22,7 @@ class ClientService(rpyc.Service):
 class BaseClient:
     def __init__(self, server, port, use_parameter_cache, call_on_error=None):
         self.use_parameter_cache = use_parameter_cache
-        self.uuid = uuid.uuid4().hex
+        self.uuid = ''.join(random.choice(string.ascii_lowercase) for i in range(10))
 
         self.client_service = ClientService(self.uuid)
 
